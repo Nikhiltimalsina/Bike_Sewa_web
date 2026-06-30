@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import UserService from "../services/user.service";
-import { validateRegisterDto, validateLoginDto } from "../dtos/user.dto";
-import { BadRequestException } from "../exceptions/http-exception";
+import { validateRegisterDto, validateLoginDto, validateUpdateProfileDto } from "../dtos/user.dto";
+import { BadRequestException, UnauthorizedException } from "../exceptions/http-exception";
 
 const UserController = {
   async register(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -28,6 +28,43 @@ const UserController = {
       }
 
       const result = await UserService.login(req.body);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async whoami(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      if (!req.user) {
+        throw new UnauthorizedException("Not authenticated");
+      }
+
+      const user = await UserService.getProfile(req.user.userId);
+      res.status(200).json({ user });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      if (!req.user) {
+        throw new UnauthorizedException("Not authenticated");
+      }
+
+      const errors = validateUpdateProfileDto(req.body);
+      if (errors.length > 0) {
+        throw new BadRequestException(errors[0]);
+      }
+
+      const avatarFileName = req.file ? req.file.filename : undefined;
+
+      const result = await UserService.updateProfile(
+        req.user.userId,
+        req.body,
+        avatarFileName
+      );
       res.status(200).json(result);
     } catch (error) {
       next(error);
