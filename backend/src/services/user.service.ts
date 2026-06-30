@@ -1,14 +1,31 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import UserRepository from "../repositories/user.repository";
-import { RegisterDto, LoginDto } from "../dtos/user.dto";
+import { RegisterDto, LoginDto, UpdateProfileDto } from "../dtos/user.dto";
 import { IUserSafe, IJwtPayload } from "../types/user.type";
 import {
   ConflictException,
   UnauthorizedException,
   NotFoundException,
+  BadRequestException,
 } from "../exceptions/http-exception";
 import { JWT_SECRET, JWT_EXPIRES_IN, SALT_ROUNDS } from "../configs/constant";
+
+const toSafeUser = (user: {
+  _id: { toString(): string };
+  fullName: string;
+  email: string;
+  phone: string;
+  role: IUserSafe["role"];
+  avatar?: string;
+}): IUserSafe => ({
+  _id: user._id.toString(),
+  fullName: user.fullName,
+  email: user.email,
+  phone: user.phone,
+  role: user.role,
+  avatar: user.avatar || "",
+});
 
 const UserService = {
   async register(dto: RegisterDto): Promise<{ message: string; user: IUserSafe }> {
@@ -28,13 +45,7 @@ const UserService = {
     });
 
     // 4. Return safe user (no password)
-    const safeUser: IUserSafe = {
-      _id: newUser._id.toString(),
-      fullName: newUser.fullName,
-      email: newUser.email,
-      phone: newUser.phone,
-      role: newUser.role,
-    };
+    const safeUser: IUserSafe = toSafeUser(newUser);
 
     return { message: "Registration successful", user: safeUser };
   },
@@ -64,15 +75,62 @@ const UserService = {
     } as jwt.SignOptions);
 
     // 4. Return token + safe user
-    const safeUser: IUserSafe = {
-      _id: user._id.toString(),
-      fullName: user.fullName,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-    };
+    const safeUser: IUserSafe = toSafeUser(user);
 
     return { message: "Login successful", token, user: safeUser };
+  },
+
+  async getProfile(userId: string): Promise<IUserSafe> {
+    const user = await UserRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+    return toSafeUser(user);
+  },
+
+  async updateProfile(
+    userId: string,
+    dto: UpdateProfileDto,
+    avatarFileName?: string
+  ): Promise<{ message: string; user: IUserSafe }> {
+    const user = await UserRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    const updateData: Partial<{
+      fullName: string;
+      phone: string;
+      password: string;
+      avatar: string;
+    }> = {};
+
+    if (dto.fullName) updateData.fullName = dto.fullName;
+    if (dto.phone) updateData.phone = dto.phone;
+    if (avatarFileName) updateData.avatar = avatarFileName;
+
+    // Handle password change
+    if (dto.currentPassword || dto.newPassword) {
+      if (!dto.currentPassword || !dto.newPassword) {
+        throw new BadRequestException(
+          "Both current and new password are required to change password"
+        );
+      }
+
+      const isMatch = await bcrypt.compare(dto.currentPassword, user.password);
+      if (!isMatch) {
+        throw new UnauthorizedException("Current password is incorrect");
+      }
+
+      updateData.password = await bcrypt.hash(dto.newPassword, SALT_ROUNDS);
+    }
+
+    const updatedUser = await UserRepository.updateById(userId, updateData);
+    if (!updatedUser) {
+      throw new NotFoundException("User not found");
+    }
+
+    return { message: "Profile updated successfully", user: toSafeUser(updatedUser) };
   },
 };
 

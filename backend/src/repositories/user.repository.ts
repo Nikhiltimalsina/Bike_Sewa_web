@@ -22,6 +22,13 @@ const UserRepository = {
   async findAll(): Promise<IUserDocument[]> {
     return UserModel.find().select("-password");
   },
+
+  async updateById(
+    id: string,
+    data: Partial<{ fullName: string; phone: string; password: string; avatar: string }>
+  ): Promise<IUserDocument | null> {
+    return UserModel.findByIdAndUpdate(id, data, { new: true });
+  },
 };
 
 export default UserRepository;
