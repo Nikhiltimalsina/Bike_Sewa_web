@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Routes that require authentication
-const PROTECTED_ROUTES = ["/profile", "/dashboard"];
+const PROTECTED_ROUTES = ["/profile", "/dashboard", "/admin"];
 
 // Auth-only pages that a logged-in user shouldn't see again
 const AUTH_ROUTES = ["/login", "/register"];
@@ -31,5 +31,11 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profile/:path*", "/dashboard/:path*", "/login", "/register"],
+  matcher: [
+    "/profile/:path*",
+    "/dashboard/:path*",
+    "/admin/:path*",
+    "/login",
+    "/register",
+  ],
 };

@@ -83,6 +83,10 @@ export default async function BlogListPage({
           </button>
         </form>
 
+        {blogs.length === 0 && (
+          <p className="text-center text-white/40 py-10">No blogs found. Create your first blog!</p>
+        )}
+
         <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
           <table className="w-full">
             <thead className="bg-white/10">
