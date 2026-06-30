@@ -10,6 +10,7 @@ export interface IUser {
   phone: string;
   password: string;
   role: UserRole;
+  avatar?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,6 +21,7 @@ export interface IUserSafe {
   email: string;
   phone: string;
   role: UserRole;
+  avatar?: string;
 }
 
 export interface IJwtPayload {

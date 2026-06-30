@@ -7,6 +7,7 @@ export interface IUserDocument extends Document {
   phone: string;
   password: string;
   role: UserRole;
+  avatar?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -40,6 +41,10 @@ const UserSchema = new Schema<IUserDocument>(
       type: String,
       enum: Object.values(UserRole),
       default: UserRole.USER,
+    },
+    avatar: {
+      type: String,
+      default: "",
     },
   },
   {
