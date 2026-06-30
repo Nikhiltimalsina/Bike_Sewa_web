@@ -33,3 +33,9 @@ export class ConflictException extends HttpException {
     super(message, 409);
   }
 }
+
+export class ForbiddenException extends HttpException {
+  constructor(message: string = "Forbidden") {
+    super(message, 403);
+  }
+}

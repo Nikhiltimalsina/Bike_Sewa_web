@@ -4,7 +4,7 @@ import { JWT_SECRET } from "../configs/constant";
 import { IJwtPayload } from "../types/user.type";
 import { UnauthorizedException } from "../exceptions/http-exception";
 
-// Extend Express Request to include user
+// Extend Express Request to include user and file from multer
 declare global {
   namespace Express {
     interface Request {
