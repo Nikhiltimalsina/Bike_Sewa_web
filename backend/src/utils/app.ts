@@ -47,8 +47,8 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚲 Bike Sewa Backend running on http://localhost:${PORT}`);
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`🚲 Bike Sewa Backend running on http://0.0.0.0:${PORT}`);
   });
 });
 
