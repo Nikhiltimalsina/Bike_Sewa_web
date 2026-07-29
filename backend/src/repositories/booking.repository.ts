@@ -9,9 +9,18 @@ class BookingRepository {
     endDate: Date;
     totalPrice: number;
     pickupLocation: string;
+    paymentMethod?: string;
   }): Promise<IBookingDocument> {
     const booking = new BookingModel(data);
     return booking.save();
+  }
+
+  async findAll(): Promise<IBookingDocument[]> {
+    return BookingModel.find().populate("bikeId").sort({ createdAt: -1 });
+  }
+
+  async countDocuments(): Promise<number> {
+    return BookingModel.countDocuments();
   }
 
   async findByUser(userId: string): Promise<IBookingDocument[]> {
