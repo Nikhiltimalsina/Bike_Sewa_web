@@ -12,6 +12,7 @@ export interface IBooking {
   startDate: Date;
   endDate: Date;
   totalPrice: number;
+  paymentMethod?: string;
   status: BookingStatus;
   pickupLocation: string;
   createdAt: Date;
