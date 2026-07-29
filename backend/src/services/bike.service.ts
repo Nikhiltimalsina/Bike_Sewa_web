@@ -47,6 +47,40 @@ class BikeService {
     const updated = await bikeRepository.setAvailability(id, true);
     return updated as IBikeDocument;
   }
+
+  // === Admin Methods ===
+
+  async createBike(data: {
+    name: string;
+    modelName: string;
+    location: string;
+    latitude: number;
+    longitude: number;
+    pricePerHour: number;
+    imageUrl?: string;
+  }): Promise<IBikeDocument> {
+    return bikeRepository.create(data);
+  }
+
+  async updateBike(id: string, data: Partial<{
+    name: string;
+    modelName: string;
+    location: string;
+    latitude: number;
+    longitude: number;
+    pricePerHour: number;
+    imageUrl: string;
+    isAvailable: boolean;
+  }>): Promise<IBikeDocument> {
+    const updated = await bikeRepository.updateById(id, data);
+    if (!updated) throw new NotFoundException("Bike not found");
+    return updated;
+  }
+
+  async deleteBike(id: string): Promise<void> {
+    const deleted = await bikeRepository.deleteById(id);
+    if (!deleted) throw new NotFoundException("Bike not found");
+  }
 }
 
 export default new BikeService();
