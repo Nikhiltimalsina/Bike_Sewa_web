@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import bookingService from "../services/booking.service";
+import UserService from "../services/user.service";
 import { IBookingDocument } from "../models/booking.model";
 import { BadRequestException } from "../exceptions/http-exception";
 
@@ -17,6 +18,7 @@ const toBookingJson = (booking: IBookingDocument) => {
     startDate: booking.startDate.toISOString(),
     endDate: booking.endDate.toISOString(),
     totalPrice: booking.totalPrice,
+    paymentMethod: booking.paymentMethod || "card",
     status: booking.status,
     pickupLocation: booking.pickupLocation,
   };
@@ -26,7 +28,7 @@ class BookingController {
   async createBooking(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user!.userId;
-      const { bikeId, startDate, endDate } = req.body;
+      const { bikeId, startDate, endDate, paymentMethod } = req.body;
 
       if (!bikeId || !startDate || !endDate) {
         throw new BadRequestException(
@@ -38,7 +40,8 @@ class BookingController {
         userId,
         bikeId,
         new Date(startDate),
-        new Date(endDate)
+        new Date(endDate),
+        paymentMethod
       );
 
       const populated = await bookingService.getBookingById(
@@ -87,6 +90,44 @@ class BookingController {
       );
       res.status(200).json({
         message: "Booking cancelled successfully",
+        booking: toBookingJson(booking),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async completeBooking(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.userId;
+      const booking = await bookingService.completeBooking(req.params.id, userId);
+      res.status(200).json({
+        message: "Booking completed successfully",
+        booking: toBookingJson(booking),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllBookings(req: Request, res: Response, next: NextFunction) {
+    try {
+      const bookings = await bookingService.getAllBookings();
+      res.status(200).json({ bookings: bookings.map(toBookingJson) });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateBookingStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { status } = req.body;
+      const booking = await bookingService.updateBookingStatus(
+        req.params.id,
+        status
+      );
+      res.status(200).json({
+        message: "Booking status updated successfully",
         booking: toBookingJson(booking),
       });
     } catch (error) {
