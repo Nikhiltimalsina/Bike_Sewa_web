@@ -50,10 +50,13 @@ export const loginAction = async (payload: LoginPayload): Promise<ActionResult> 
         sameSite: "strict",
       });
 
-      // Store user info in cookie for quick access
+// Store user info in cookie for quick access
       Cookies.set("user_info", JSON.stringify({
         fullName: response.user?.fullName,
         email: response.user?.email,
+        role: response.user?.role,
+        phone: response.user?.phone,
+        avatar: response.user?.avatar,
       }), { expires: 7 });
     }
 
