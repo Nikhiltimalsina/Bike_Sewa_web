@@ -7,6 +7,7 @@ export interface IBookingDocument extends Document {
   startDate: Date;
   endDate: Date;
   totalPrice: number;
+  paymentMethod?: string;
   status: BookingStatus;
   pickupLocation: string;
   createdAt: Date;
@@ -47,6 +48,11 @@ const BookingSchema = new Schema<IBookingDocument>(
       type: String,
       required: [true, "Pickup location is required"],
       trim: true,
+    },
+    paymentMethod: {
+      type: String,
+      enum: ["card", "esewa", "khalti", "bank"],
+      default: "card",
     },
   },
   {
