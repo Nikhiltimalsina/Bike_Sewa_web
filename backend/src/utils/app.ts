@@ -46,9 +46,11 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   return res.status(500).json({ message: "Internal server error" });
 });
 
+const port = Number(PORT) || 3001;
+
 connectDB().then(() => {
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`🚲 Bike Sewa Backend running on http://0.0.0.0:${PORT}`);
+  app.listen(port, "0.0.0.0", () => {
+    console.log(`🚲 Bike Sewa Backend running on http://0.0.0.0:${port}`);
   });
 });
 
