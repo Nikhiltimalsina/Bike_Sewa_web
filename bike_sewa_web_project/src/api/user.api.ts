@@ -34,9 +34,7 @@ export const updateProfileApi = async (
   if (payload.newPassword) formData.append("newPassword", payload.newPassword);
   if (payload.avatar) formData.append("avatar", payload.avatar);
 
-  const response = await apiClient.put<UpdateProfileResponse>("/api/v1/auth/update", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const response = await apiClient.put<UpdateProfileResponse>("/api/v1/auth/update", formData);
 
   return response.data;
 };
