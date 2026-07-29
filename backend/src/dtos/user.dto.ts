@@ -3,6 +3,7 @@ export interface RegisterDto {
   email: string;
   phone: string;
   password: string;
+  role?: string;
 }
 
 export interface LoginDto {
@@ -15,6 +16,15 @@ export interface UpdateProfileDto {
   phone?: string;
   currentPassword?: string;
   newPassword?: string;
+}
+
+export interface ForgotPasswordDto {
+  email: string;
+}
+
+export interface ResetPasswordDto {
+  token: string;
+  password: string;
 }
 
 // Validation helpers (mirrors Zod on frontend)
