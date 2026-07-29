@@ -9,6 +9,18 @@ const AUTH_ROUTES = ["/login", "/register"];
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("auth_token")?.value;
+  const userInfo = request.cookies.get("user_info")?.value;
+
+  // Parse user info to check role
+  let userRole: string | null = null;
+  if (userInfo) {
+    try {
+      const parsed = JSON.parse(userInfo);
+      userRole = parsed.role || null;
+    } catch {
+      // ignore parse errors
+    }
+  }
 
   const isProtectedRoute = PROTECTED_ROUTES.some((route) =>
     pathname.startsWith(route)
@@ -22,9 +34,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Already logged in + trying to access login/register -> send to dashboard
+  // Already logged in + trying to access login/register -> send to appropriate page
   if (isAuthRoute && token) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    if (userRole === "admin") {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
+    return NextResponse.redirect(new URL("/home", request.url));
   }
 
   return NextResponse.next();
