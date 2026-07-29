@@ -13,7 +13,8 @@ class BookingService {
     userId: string,
     bikeId: string,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
+    paymentMethod?: string
   ): Promise<IBookingDocument> {
     if (!(startDate < endDate)) {
       throw new BadRequestException("Start date must be before end date");
@@ -37,6 +38,7 @@ class BookingService {
       endDate,
       totalPrice,
       pickupLocation: bike.location,
+      paymentMethod,
     });
 
     await bikeRepository.setAvailability(bikeId, false);
@@ -77,6 +79,49 @@ class BookingService {
 
     await bikeRepository.setAvailability(booking.bikeId.toString(), true);
 
+    return updated as IBookingDocument;
+  }
+
+  async completeBooking(id: string, userId: string): Promise<IBookingDocument> {
+    const booking = await this.getBookingById(id, userId);
+
+    if (booking.status === BookingStatus.COMPLETED) {
+      throw new BadRequestException("Booking is already completed");
+    }
+
+    const updated = await bookingRepository.updateStatus(
+      id,
+      BookingStatus.COMPLETED
+    );
+
+    await bikeRepository.setAvailability(booking.bikeId.toString(), true);
+
+    return updated as IBookingDocument;
+  }
+
+  async getAllBookings(): Promise<IBookingDocument[]> {
+    return bookingRepository.findAll();
+  }
+
+  async updateBookingStatus(
+    id: string,
+    status: string
+  ): Promise<IBookingDocument> {
+    if (!Object.values(BookingStatus).includes(status as BookingStatus)) {
+      throw new BadRequestException("Invalid booking status");
+    }
+    const updated = await bookingRepository.updateStatus(
+      id,
+      status as BookingStatus
+    );
+    if (!updated) {
+      throw new NotFoundException("Booking not found");
+    }
+    if (status === BookingStatus.COMPLETED) {
+      await bikeRepository.setAvailability(updated.bikeId.toString(), true);
+    } else if (status === BookingStatus.ONGOING) {
+      await bikeRepository.setAvailability(updated.bikeId.toString(), false);
+    }
     return updated as IBookingDocument;
   }
 }
