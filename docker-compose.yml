@@ -1,0 +1,53 @@
+services:
+
+  # Express + TypeScript API (Backend)
+  api:
+    build: ./backend
+    container_name: bikesewa-api-container
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MONGO_URI=mongodb://mongo:27017/bike_sewa
+      - JWT_SECRET=bike_sewa_super_secret_key_change_in_production
+      - JWT_EXPIRES_IN=7d
+    depends_on:
+      - mongo
+    volumes:
+      # Persist uploaded files (avatars, images) across restarts
+      - uploads-data:/app/uploads
+
+  # Next.js frontend
+  web:
+    build:
+      context: ./bike_sewa_web_project
+      args:
+        # At build time, Next.js can reach the API via Docker service name
+        NEXT_PUBLIC_API_BASE_URL: http://api:3001
+    container_name: bikesewa-next-container
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - NEXT_PUBLIC_API_BASE_URL=http://api:3001
+      - BACKEND_URL=http://api:3001
+    depends_on:
+      - api
+
+  # MongoDB database
+  mongo:
+    image: mongo:8
+    container_name: bikesewa-mongo-container
+    ports:
+      # Expose on a different host port to avoid conflict with local MongoDB
+      - "27018:27017"
+    volumes:
+      # Persist data across container restarts
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
+  uploads-data:
+
