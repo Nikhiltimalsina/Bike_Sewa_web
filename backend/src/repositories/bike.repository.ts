@@ -13,7 +13,7 @@ class BikeRepository {
     return BikeModel.findById(id);
   }
 
-async search(query: string): Promise<IBikeDocument[]> {
+  async search(query: string): Promise<IBikeDocument[]> {
      const regex = new RegExp(query, "i");
      return BikeModel.find({
        $or: [{ name: regex }, { modelName: regex }, { location: regex }],
@@ -34,6 +34,42 @@ async search(query: string): Promise<IBikeDocument[]> {
       { isAvailable },
       { new: true }
     );
+  }
+
+  async create(data: {
+    name: string;
+    modelName: string;
+    location: string;
+    latitude: number;
+    longitude: number;
+    pricePerHour: number;
+    imageUrl?: string;
+  }): Promise<IBikeDocument> {
+    return BikeModel.create(data);
+  }
+
+  async updateById(
+    id: string,
+    data: Partial<{
+      name: string;
+      modelName: string;
+      location: string;
+      latitude: number;
+      longitude: number;
+      pricePerHour: number;
+      imageUrl: string;
+      isAvailable: boolean;
+    }>
+  ): Promise<IBikeDocument | null> {
+    return BikeModel.findByIdAndUpdate(id, data, { new: true });
+  }
+
+  async deleteById(id: string): Promise<IBikeDocument | null> {
+    return BikeModel.findByIdAndDelete(id);
+  }
+
+  async countDocuments(): Promise<number> {
+    return BikeModel.countDocuments();
   }
 }
 
