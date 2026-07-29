@@ -16,6 +16,7 @@ const UserRepository = {
       email: data.email.toLowerCase(),
       phone: data.phone,
       password: data.password,
+      role: (data as RegisterDto & { password: string; role?: string }).role || "user",
     });
   },
 
@@ -23,11 +24,26 @@ const UserRepository = {
     return UserModel.find().select("-password");
   },
 
+  async countDocuments(): Promise<number> {
+    return UserModel.countDocuments();
+  },
+
+  async deleteById(id: string): Promise<IUserDocument | null> {
+    return UserModel.findByIdAndDelete(id);
+  },
+
   async updateById(
     id: string,
-    data: Partial<{ fullName: string; phone: string; password: string; avatar: string }>
+    data: Partial<{ fullName: string; phone: string; password: string; avatar: string; role: string; resetPasswordToken: string; resetPasswordExpires: Date }>
   ): Promise<IUserDocument | null> {
     return UserModel.findByIdAndUpdate(id, data, { new: true });
+  },
+
+  async findByResetToken(token: string): Promise<IUserDocument | null> {
+    return UserModel.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: new Date() },
+    });
   },
 };
 
