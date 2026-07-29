@@ -106,7 +106,7 @@ export default function RegisterPage() {
           {/* LEFT SIDE */}
           <div className="hidden lg:block relative overflow-hidden">
             <Image
-              src="/images/register-bg.webp"
+              src="/images/signup.webp"
               alt="Register Background"
               fill
               priority
