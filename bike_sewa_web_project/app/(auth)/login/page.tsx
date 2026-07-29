@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import { loginSchema, LoginFormData } from "@/schemas/auth.schema";
 import { loginAction } from "@/actions/auth.action";
 
@@ -50,7 +51,32 @@ export default function LoginPage() {
     setIsLoading(false);
 
     if (response.success) {
-      router.push("/dashboard");
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get("redirect");
+
+      // If there's a redirect param, use it
+      if (redirect) {
+        router.push(redirect);
+      } else {
+        // Otherwise, redirect based on user role
+        // We need to check the user_info cookie that loginAction stores
+        const userInfoCookie = Cookies.get("user_info");
+        if (userInfoCookie) {
+          try {
+            const parsed = JSON.parse(userInfoCookie);
+            if (parsed.role === "admin") {
+              router.push("/admin");
+            } else {
+              router.push("/home");
+            }
+            return;
+          } catch (e) {
+            // fall through to default
+          }
+        }
+        // Default fallback
+        router.push("/home");
+      }
     } else {
       setServerError(response.message);
     }
@@ -89,7 +115,7 @@ export default function LoginPage() {
           {/* LEFT SIDE */}
           <div className="hidden lg:block relative overflow-hidden">
             <Image
-              src="/images/login-bg.png"
+              src="/images/login.png"
               alt="Login Background"
               fill
               priority
