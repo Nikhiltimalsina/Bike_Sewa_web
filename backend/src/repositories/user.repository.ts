@@ -23,11 +23,22 @@ const UserRepository = {
     return UserModel.find().select("-password");
   },
 
+  async count(): Promise<number> {
+    return UserModel.countDocuments();
+  },
+
   async updateById(
     id: string,
-    data: Partial<{ fullName: string; phone: string; password: string; avatar: string }>
+    data: Partial<{ fullName: string; phone: string; password: string; avatar: string; twoFactorEnabled: boolean; resetPasswordToken: string; resetPasswordExpires: Date }>
   ): Promise<IUserDocument | null> {
     return UserModel.findByIdAndUpdate(id, data, { new: true });
+  },
+
+  async findByResetToken(token: string): Promise<IUserDocument | null> {
+    return UserModel.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: new Date() },
+    });
   },
 };
 

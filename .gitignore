@@ -1,0 +1,56 @@
+# Build artifacts
+/backend/dist/
+/backend/node_modules/
+/bike_sewa_web_project/node_modules/
+/bike_sewa_web_project/.next/
+/bike_sewa_web_project/out/
+/bike_sewa_web_project/build/
+/bike_sewa_web_project/.svelte-kit/
+/bike_sewa_web_project/.vitepress/
+/bike_sewa_web_project/dist/
+
+# Flutter
+/bike_sewa/.dart_tool/
+/bike_sewa/.flutter-plugins
+/bike_sewa/.flutter-plugins-dependencies
+/bike_sewa/build/
+/bike_sewa/web/build/
+/bike_sewa/web/.dart2js_cache/
+/bike_sewa/web/*.dart.js
+/bike_sewa/web/*.dart.js.map
+/bike_sewa/web/flutter.js
+/bike_sewa/web/flutter.js.map
+/bike_sewa/.packages
+/bike_sewa/.flutter-plugins
+/bike_sewa/.pub-cache/
+
+# Environment
+/backend/.env
+/*.env
+*.env
+!.env.example
+
+# TypeScript
+/bike_sewa_web_project/tsconfig.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Uploads
+/backend/uploads/
+
+# Other
+*.log
+kilo.log
+.agents/

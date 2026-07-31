@@ -93,6 +93,22 @@ class BookingController {
       next(error);
     }
   }
+
+  async completeBooking(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.userId;
+      const booking = await bookingService.completeBooking(
+        req.params.id,
+        userId
+      );
+      res.status(200).json({
+        message: "Booking completed successfully",
+        booking: toBookingJson(booking),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new BookingController();

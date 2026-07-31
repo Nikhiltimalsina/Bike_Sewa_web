@@ -13,7 +13,7 @@ const sampleBikes = [
     longitude: 85.31,
     isAvailable: true,
     pricePerHour: 3200,
-    imageUrl: "http://localhost:3000/images/duke390.webp",
+    imageUrl: "/uploads/images/duke390.webp",
   },
   {
     name: "KTM Duke 250",
@@ -23,7 +23,7 @@ const sampleBikes = [
     longitude: 83.9856,
     isAvailable: true,
     pricePerHour: 2500,
-    imageUrl: "http://localhost:3000/images/duke250.jpeg",
+    imageUrl: "/uploads/images/duke250.jpeg",
   },
   {
     name: "Yamaha R15 V3",
@@ -33,7 +33,7 @@ const sampleBikes = [
     longitude: 85.3247,
     isAvailable: true,
     pricePerHour: 2200,
-    imageUrl: "http://localhost:3000/images/r15v3.webp",
+    imageUrl: "/uploads/images/r15v3.webp",
   },
   {
     name: "Yamaha MT-15",
@@ -43,7 +43,7 @@ const sampleBikes = [
     longitude: 85.3619,
     isAvailable: true,
     pricePerHour: 2400,
-    imageUrl: "http://localhost:3000/images/mt15.jpeg",
+    imageUrl: "/uploads/images/mt15.jpeg",
   },
   {
     name: "Royal Enfield Classic 350",
@@ -53,7 +53,7 @@ const sampleBikes = [
     longitude: 85.3125,
     isAvailable: true,
     pricePerHour: 2800,
-    imageUrl: "http://localhost:3000/images/royal%20enfield.avif",
+    imageUrl: "/uploads/images/royal enfield.avif",
   },
   {
     name: "Bajaj Pulsar 220",
@@ -63,7 +63,7 @@ const sampleBikes = [
     longitude: 85.3305,
     isAvailable: true,
     pricePerHour: 2000,
-    imageUrl: "http://localhost:3000/images/pulsar220.avif",
+    imageUrl: "/uploads/images/pulsar220.avif",
   },
   {
     name: "Honda Shine",
@@ -73,7 +73,7 @@ const sampleBikes = [
     longitude: 85.3255,
     isAvailable: true,
     pricePerHour: 1500,
-    imageUrl: "http://localhost:3000/images/honda%20shine.jpeg",
+    imageUrl: "/uploads/images/honda shine.jpeg",
   },
   {
     name: "TVS Apache RTR 160",
@@ -83,7 +83,7 @@ const sampleBikes = [
     longitude: 83.9845,
     isAvailable: true,
     pricePerHour: 1800,
-    imageUrl: "http://localhost:3000/images/xtreme.avif",
+    imageUrl: "/uploads/images/xtreme.avif",
   },
   {
     name: "Hero Xtreme 200",
@@ -93,7 +93,7 @@ const sampleBikes = [
     longitude: 84.4325,
     isAvailable: false,
     pricePerHour: 1900,
-    imageUrl: "http://localhost:3000/images/xtreme.avif",
+    imageUrl: "/uploads/images/xtreme.avif",
   },
   {
     name: "Hero Xpulse 200",
@@ -103,7 +103,7 @@ const sampleBikes = [
     longitude: 85.3625,
     isAvailable: true,
     pricePerHour: 2100,
-    imageUrl: "http://localhost:3000/images/xpulse.cms",
+    imageUrl: "/uploads/images/xpulsee.jpg",
   },
   {
     name: "Bajaj Discover 125",
@@ -113,7 +113,7 @@ const sampleBikes = [
     longitude: 85.3195,
     isAvailable: true,
     pricePerHour: 1200,
-    imageUrl: "http://localhost:3000/images/discover.avif",
+    imageUrl: "/uploads/images/discover.avif",
   },
 ];
 

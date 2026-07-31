@@ -15,6 +15,16 @@ export interface UpdateProfileDto {
   phone?: string;
   currentPassword?: string;
   newPassword?: string;
+  twoFactorEnabled?: boolean;
+}
+
+export interface ForgotPasswordDto {
+  email: string;
+}
+
+export interface ResetPasswordDto {
+  token: string;
+  password: string;
 }
 
 // Validation helpers (mirrors Zod on frontend)
@@ -76,6 +86,38 @@ export const validateUpdateProfileDto = (body: Partial<UpdateProfileDto>): strin
 
     if (body.newPassword && !/[0-9]/.test(body.newPassword))
       errors.push("New password must contain at least one number");
+  }
+
+  return errors;
+};
+
+export const validateForgotPasswordDto = (body: Partial<ForgotPasswordDto>): string[] => {
+  const errors: string[] = [];
+
+  if (!body.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+    errors.push("Please provide a valid email address");
+  }
+
+  return errors;
+};
+
+export const validateResetPasswordDto = (body: Partial<ResetPasswordDto>): string[] => {
+  const errors: string[] = [];
+
+  if (!body.token || body.token.trim().length === 0) {
+    errors.push("Reset token is required");
+  }
+
+  if (!body.password || body.password.length < 8) {
+    errors.push("Password must be at least 8 characters");
+  }
+
+  if (body.password && !/[A-Z]/.test(body.password)) {
+    errors.push("Password must contain at least one uppercase letter");
+  }
+
+  if (body.password && !/[0-9]/.test(body.password)) {
+    errors.push("Password must contain at least one number");
   }
 
   return errors;

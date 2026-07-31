@@ -5,6 +5,12 @@ import uploadAvatar from "../middlewares/upload.middleware";
 
 const userRouter = Router();
 
+// POST /auth/forgot-password (public)
+userRouter.post("/forgot-password", UserController.forgotPassword);
+
+// POST /auth/reset-password (public)
+userRouter.post("/reset-password", UserController.resetPassword);
+
 // POST /auth/register
 userRouter.post("/register", UserController.register);
 
@@ -21,5 +27,8 @@ userRouter.put(
   uploadAvatar.single("avatar"),
   UserController.updateProfile
 );
+
+// GET /auth/users/stats (protected)
+userRouter.get("/users/stats", authorizedMiddleware, UserController.getStats);
 
 export default userRouter;

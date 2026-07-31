@@ -20,6 +20,10 @@ class BookingRepository {
       .sort({ createdAt: -1 });
   }
 
+  async findAll(): Promise<IBookingDocument[]> {
+    return BookingModel.find().populate("bikeId").sort({ createdAt: -1 });
+  }
+
   async findById(id: string): Promise<IBookingDocument | null> {
     return BookingModel.findById(id).populate("bikeId");
   }

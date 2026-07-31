@@ -1,14 +1,15 @@
 import { Router } from "express";
-import bookingController from "../controllers/booking.controller";
+import BookingController from "../controllers/booking.controller";
 import authorizedMiddleware from "../middlewares/authorized.middleware";
 
 const bookingRouter = Router();
 
 bookingRouter.use(authorizedMiddleware);
 
-bookingRouter.post("/", bookingController.createBooking);
-bookingRouter.get("/me", bookingController.getMyBookings);
-bookingRouter.get("/:id", bookingController.getBookingById);
-bookingRouter.post("/:id/cancel", bookingController.cancelBooking);
+bookingRouter.post("/", BookingController.createBooking);
+bookingRouter.get("/me", BookingController.getMyBookings);
+bookingRouter.get("/:id", BookingController.getBookingById);
+bookingRouter.patch("/:id/cancel", BookingController.cancelBooking);
+bookingRouter.patch("/:id/complete", BookingController.completeBooking);
 
 export default bookingRouter;

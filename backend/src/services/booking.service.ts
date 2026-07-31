@@ -79,6 +79,47 @@ class BookingService {
 
     return updated as IBookingDocument;
   }
+
+  async completeBooking(id: string, userId: string): Promise<IBookingDocument> {
+    const booking = await this.getBookingById(id, userId);
+
+    if (booking.status === BookingStatus.COMPLETED) {
+      throw new BadRequestException("Booking is already completed");
+    }
+    if (booking.status === BookingStatus.CANCELLED) {
+      throw new BadRequestException("Cannot complete a cancelled booking");
+    }
+
+    const updated = await bookingRepository.updateStatus(
+      id,
+      BookingStatus.COMPLETED
+    );
+
+    await bikeRepository.setAvailability(booking.bikeId.toString(), true);
+
+    return updated as IBookingDocument;
+  }
+
+  async getAllBookings(): Promise<IBookingDocument[]> {
+    return bookingRepository.findAll();
+  }
+
+  async updateBookingStatus(
+    id: string,
+    status: string
+  ): Promise<IBookingDocument> {
+    const booking = await bookingRepository.findById(id);
+    if (!booking) throw new NotFoundException("Booking not found");
+    if (!Object.values(BookingStatus).includes(status as BookingStatus)) {
+      throw new BadRequestException("Invalid booking status");
+    }
+    const updated = await bookingRepository.updateStatus(
+      id,
+      status as BookingStatus
+    );
+    if (!updated) throw new NotFoundException("Booking not found");
+    return updated;
+  }
 }
 
 export default new BookingService();

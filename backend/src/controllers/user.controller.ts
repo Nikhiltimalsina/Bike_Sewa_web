@@ -1,12 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import UserService from "../services/user.service";
-import { validateRegisterDto, validateLoginDto, validateUpdateProfileDto } from "../dtos/user.dto";
-import { BadRequestException, UnauthorizedException } from "../exceptions/http-exception";
+import BikeModel from "../models/bike.model";
+import BookingModel from "../models/booking.model";
+import { validateRegisterDto, validateLoginDto, validateUpdateProfileDto, validateForgotPasswordDto, validateResetPasswordDto } from "../dtos/user.dto";
+import { BadRequestException, UnauthorizedException, NotFoundException } from "../exceptions/http-exception";
 
 const UserController = {
   async register(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // Validate incoming body
       const errors = validateRegisterDto(req.body);
       if (errors.length > 0) {
         throw new BadRequestException(errors[0]);
@@ -21,7 +22,6 @@ const UserController = {
 
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // Validate incoming body
       const errors = validateLoginDto(req.body);
       if (errors.length > 0) {
         throw new BadRequestException(errors[0]);
@@ -66,6 +66,47 @@ const UserController = {
         avatarFileName
       );
       res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const errors = validateForgotPasswordDto(req.body);
+      if (errors.length > 0) {
+        throw new BadRequestException(errors[0]);
+      }
+
+      const result = await UserService.forgotPassword(req.body);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const errors = validateResetPasswordDto(req.body);
+      if (errors.length > 0) {
+        throw new BadRequestException(errors[0]);
+      }
+
+      const result = await UserService.resetPassword(req.body);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async getStats(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const [totalUsers, totalBikes, totalBookings] = await Promise.all([
+        UserService.countAll(),
+        BikeModel.countDocuments(),
+        BookingModel.countDocuments(),
+      ]);
+      res.status(200).json({ totalUsers, totalBikes, totalBookings });
     } catch (error) {
       next(error);
     }

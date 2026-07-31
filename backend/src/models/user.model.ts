@@ -8,6 +8,8 @@ export interface IUserDocument extends Document {
   password: string;
   role: UserRole;
   avatar?: string;
+  twoFactorEnabled: boolean;
+  twoFactorSecret?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -44,6 +46,22 @@ const UserSchema = new Schema<IUserDocument>(
     },
     avatar: {
       type: String,
+      default: "",
+    },
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    twoFactorSecret: {
+      type: String,
+      default: "",
+    },
+    resetPasswordToken: {
+      type: String,
+      default: "",
+    },
+    resetPasswordExpires: {
+      type: Date,
       default: "",
     },
   },

@@ -1,7 +1,8 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import UserRepository from "../repositories/user.repository";
-import { RegisterDto, LoginDto, UpdateProfileDto } from "../dtos/user.dto";
+import { RegisterDto, LoginDto, UpdateProfileDto, ForgotPasswordDto, ResetPasswordDto } from "../dtos/user.dto";
 import { IUserSafe, IJwtPayload } from "../types/user.type";
 import {
   ConflictException,
@@ -103,11 +104,13 @@ const UserService = {
       phone: string;
       password: string;
       avatar: string;
+      twoFactorEnabled: boolean;
     }> = {};
 
     if (dto.fullName) updateData.fullName = dto.fullName;
     if (dto.phone) updateData.phone = dto.phone;
     if (avatarFileName) updateData.avatar = avatarFileName;
+    if (dto.twoFactorEnabled !== undefined) updateData.twoFactorEnabled = dto.twoFactorEnabled;
 
     // Handle password change
     if (dto.currentPassword || dto.newPassword) {
@@ -131,6 +134,51 @@ const UserService = {
     }
 
     return { message: "Profile updated successfully", user: toSafeUser(updatedUser) };
+  },
+
+  async forgotPassword(dto: ForgotPasswordDto): Promise<{ message: string; resetToken: string }> {
+    const user = await UserRepository.findByEmail(dto.email);
+    if (!user) {
+      throw new NotFoundException("No account found with this email");
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const expires = new Date(Date.now() + 3600000);
+
+    await UserRepository.updateById(user._id.toString(), {
+      resetPasswordToken: resetToken,
+      resetPasswordExpires: expires,
+    });
+
+    return {
+      message: "Password reset token generated",
+      resetToken,
+    };
+  },
+
+  async resetPassword(dto: ResetPasswordDto): Promise<{ message: string }> {
+    const user = await UserRepository.findByResetToken(dto.token);
+    if (!user) {
+      throw new BadRequestException("Invalid or expired reset token");
+    }
+
+    if (!user.resetPasswordExpires || user.resetPasswordExpires < new Date()) {
+      throw new BadRequestException("Reset token has expired");
+    }
+
+    const hashedPassword = await bcrypt.hash(dto.password, SALT_ROUNDS);
+
+    await UserRepository.updateById(user._id.toString(), {
+      password: hashedPassword,
+      resetPasswordToken: "",
+      resetPasswordExpires: new Date(),
+    });
+
+    return { message: "Password has been reset successfully" };
+  },
+
+  async countAll(): Promise<number> {
+    return UserRepository.count();
   },
 };
 
